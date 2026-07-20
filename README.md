@@ -2,7 +2,7 @@
 
 Sistema para gerenciamento de metas de vendas no varejo farmacêutico.
 
-## Módulos
+## 📋 Módulos
 
 - 🏠 Home
 - 📊 Dashboard
@@ -11,8 +11,10 @@ Sistema para gerenciamento de metas de vendas no varejo farmacêutico.
 - 📄 Relatórios
 - ⚙️ Configurações
 
-## Versão
+## 🚀 Versão
 
-3.0
+*3.0*
 
-Desenvolvido por Adalto Silva.
+## 👨‍💻 Desenvolvedor
+
+*Adalto Silva*
