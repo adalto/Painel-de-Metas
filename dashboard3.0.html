@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>meta</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f2f2f2;padding:20px}
+.card{max-width:1100px;width:95%;margin:auto;background:#fff;padding:20px;border-radius:12px;box-shadow:0 0 10px #ccc}
+h2{text-align:center;color:#009640;margin-bottom:5px}
+.data{text-align:center;color:#666;margin-bottom:15px}
+input,button{width:100%;padding:10px;margin:8px 0;box-sizing:border-box;border-radius:8px;border:1px solid #ccc}
+button{background:#009640;color:#fff;border:none}
+.sec{background:#d32f2f}
+.progress{height:20px;background:#ddd;border-radius:10px;overflow:hidden;margin:15px 0}
+#barra{height:20px;width:0;background:#009640}
+#status{margin:15px 0;padding:12px;border-radius:8px;background:#f5f5f5;font-weight:bold;text-align:center}
+small{color:#666}
+
+.grid{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(220px,1fr));
+ gap:12px;
+}
+.indicadores{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(250px,1fr));
+ gap:10px;
+}
+.botoes{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:10px;
+}
+@media (max-width:700px){
+ .card{max-width:430px;width:auto}
+ .grid,.indicadores,.botoes{grid-template-columns:1fr;}
+}
+
+@page{
+  size:A4 portrait;
+  margin:10mm;
+}
+@media print{
+  html,body{
+    width:210mm;
+    min-height:297mm;
+    margin:0;
+    padding:0;
+    background:#fff!important;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+  body{zoom:.95;}
+  .card{width:100%!important;max-width:none!important;margin:0!important;padding:10mm!important;box-shadow:none!important;border:1px solid #ccc;}
+  button{display:none!important;}
+  input{border:none!important;background:transparent!important;font-weight:bold;}
+}
+
+
+.card-principal{
+background:#009640;
+color:#fff;
+padding:18px;
+border-radius:14px;
+text-align:center;
+margin-bottom:18px;
+}
+.card-principal h2{color:#fff;margin:0}
+.form-card,.resultado-card{
+background:#fafafa;
+border-radius:12px;
+padding:14px;
+margin-bottom:15px;
+border:1px solid #e5e5e5;
+}
+.indicadores p{
+background:#fff;
+padding:10px;
+border-radius:8px;
+margin:6px 0;
+box-shadow:0 1px 4px rgba(0,0,0,.08);
+}
+@media(max-width:700px){
+body{padding:10px}
+.card{padding:12px;border-radius:14px}
+button{font-size:16px;font-weight:bold}
+}
+
+
+.assinatura{
+text-align:right;
+font-family:"Brush Script MT","Segoe Script",cursive;
+font-size:20px;
+color:#ffffff;
+opacity:.95;
+margin-top:6px;
+}
+
+
+body{margin:0;}
+.sticky-panel{
+position:sticky;
+top:0;
+z-index:1000;
+background:#ffffff;
+padding-bottom:10px;
+box-shadow:0 4px 12px rgba(0,0,0,.12);
+}
+.scroll-area{
+max-height:calc(100vh - 360px);
+overflow-y:auto;
+padding-top:10px;
+}
+
+
+.card-principal{
+position:sticky !important;
+top:0;
+z-index:9999;
+box-shadow:0 4px 12px rgba(0,0,0,.25);
+}
+
+
+@media print{
+.card-principal{
+position:static !important;
+top:auto !important;
+left:auto !important;
+width:100% !important;
+box-shadow:none !important;
+transform:none !important;
+}
+}
+
+
+@page{
+  size:A4 portrait;
+  margin:12mm;
+}
+@media print{
+  body{background:#fff!important;}
+  .card-principal{
+    position:static!important;
+    box-shadow:none!important;
+    border-radius:10px!important;
+    margin-bottom:12px!important;
+  }
+  .form-card{
+    border:1px solid #ddd!important;
+    box-shadow:none!important;
+  }
+  .resultado-card{
+    border:1px solid #ddd!important;
+    box-shadow:none!important;
+  }
+  button{display:none!important;}
+  small{display:none!important;}
+  .assinatura{
+    color:#fff!important;
+  }
+  body::after{
+    content:"Relatório gerado pelo Painel de Metas • by Adalto Silva";
+    display:block;
+    margin-top:12mm;
+    text-align:center;
+    font-size:10pt;
+    color:#666;
+  }
+}
+
+
+@media print{
+#dadosApuracao{display:block!important;margin:12px 0;padding:10px;border:1px solid #bbb;border-radius:8px;background:#fff;}
+}
+
+
+@media print{
+  .form-card{display:none !important;}
+}
+
+</style>
+</head>
+<body>
+<div class="card">
+<div style="display:flex;justify-content:flex-start;margin-bottom:12px;">
+
+</div>
+
+<div class="card-principal"><h2>📈 Painel de Metas</h2><div class="assinatura">by Adalto Silva</div></div>
+<div style="margin:12px 0;">
+<button type="button"
+onclick="window.location.href='index.html'"
+style="width:auto;padding:10px 18px;background:#1565c0;color:#fff;border:none;border-radius:8px;cursor:pointer;">
+⬅ Menu Principal
+</button>
+</div>
+<div class="botoes"></div>
+
+
+<div id="dadosApuracao" style="display:none">
+<h3>Dados da Apuração</h3>
+<p><b>Data de Referência:</b> <span id="rData"></span></p>
+<p><b>Meta Geral:</b> <span id="rMeta"></span></p>
+<p><b>Domingos:</b> <span id="rDom"></span></p>
+<p><b>Total Vendido:</b> <span id="rVend"></span></p>
+<p><b>Dias Trabalhados:</b> <span id="rDias"></span></p>
+<hr>
+</div>
+
+<div class="form-card">
+<div class="data">
+📅 Data de referência<br>
+<input id="hoje" type="date">
+</div>
+
+<div class="grid">
+<div style="grid-column:1/-1;background:#f8faf8;border:1px solid #d9e8dd;border-radius:12px;padding:12px;">
+<label style="margin:0 0 8px 0;display:block;font-weight:bold;color:#009640;">📂 Categoria da Meta</label>
+<select id="categoriaMeta" onchange="carregarMetaCategoria()" style="font-weight:bold;background:#fff;">
+<option value="metaVendaGeral">🏪 Venda Geral</option>
+<option value="metaGenericos">💊 Genérico e Similar</option>
+<option value="metaPerfumaria">🧴 Perfumaria</option>
+</select>
+<div id="infoCategoria" style="margin-top:10px;padding:10px;background:#009640;color:#fff;border-radius:10px;text-align:center;font-weight:bold;">
+🏪 Venda Geral • Meta: R$ 0,00
+</div>
+</div>
+<input id="meta" type="text" placeholder="Meta Geral">
+<input id="domingo" type="text" placeholder="Domingos (opcional)">
+<input id="vendido" type="text" placeholder="Total Vendido">
+<input id="dias" type="number" placeholder="Dias para trabalhar">
+</div>
+
+<div class="botoes">
+<div class="botoes">
+<button onclick="calc()">Calcular</button><button type="button" onclick="importarUltimoFechamento()">📥 Importar Último Fechamento</button>
+</div>
+
+</div></div>
+
+<div class="resultado-card">
+<div class="progress"><div id="barra"></div></div>
+
+<div class="indicadores">
+<p><b>Percentual atingido:</b> <span id="perc">0%</span></p>
+<p><b>Percentual esperado:</b> <span id="esp">0%</span></p>
+<p><b>Diferença:</b> <span id="dif">0%</span></p>
+<p><b>Projeção:</b> <span id="proj">R$ 0,00</span></p>
+<p><b>Previsão:</b> <span id="previsao">-</span></p>
+<p><b>Falta:</b> <span id="falta">R$ 0,00</span></p>
+<p><b>Média diária necessária:</b> <span id="media">R$ 0,00</span></p>
+<p><b>🎯 Meta de Hoje:</b> <span id="metaHoje">R$ 0,00</span></p>
+
+
+</div>
+<div id="status">Aguardando cálculo...</div>
+
+</div>
+<div class="botoes">
+<button onclick="comp()">📲 Compartilhar WhatsApp</button>
+<button onclick="salvarPDF()">📄 Salvar PDF</button>
+<button onclick="imprimir()">🖨️ Imprimir</button>
+</div>
+<button class="sec" onclick="limpar()">🗑️ Limpar Dados</button>
+
+<p><small>🟢 No ritmo | 🟡 Até 10% abaixo | 🔴 Mais de 10% abaixo</small></p>
+</div>
+</div>
+
+<script>
+const agora=new Date();
+const hoje=
+    agora.getFullYear()+"-"+
+    String(agora.getMonth()+1).padStart(2,"0")+"-"+
+    String(agora.getDate()).padStart(2,"0");
+
+const dataSalva=localStorage.getItem("dataReferencia");
+
+if(!dataSalva || dataSalva!==hoje){
+    localStorage.setItem("dataReferencia",hoje);
+}
+
+document.getElementById("hoje").value=localStorage.getItem("dataReferencia");
+
+function mask(el){
+ let v=el.value.replace(/\D/g,"");
+ if(!v){el.value="";return;}
+ v=(parseInt(v,10)/100).toFixed(2).replace(".",",");
+ v=v.replace(/\B(?=(\d{3})+(?!\d))/g,".");
+ el.value=v;
+}
+meta.oninput=()=>mask(meta);
+vendido.oninput=()=>mask(vendido);
+document.getElementById("domingo").oninput=()=>mask(document.getElementById("domingo"));
+
+function ler(id){
+ return parseFloat(document.getElementById(id).value.replace(/\./g,"").replace(",", "."))||0;
+}
+function br(v){return v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});}
+
+function calc(){
+ let m=ler("meta");
+ let domingos=ler("domingo");
+ m=Math.max(m-domingos,0);
+ let v=ler("vendido"),d=Number(document.getElementById("dias").value)||1;
+ let p=m?v/m*100:0;
+ let f=Math.max(m-v,0);
+ let md=f/d;
+
+ let h=new Date(document.getElementById("hoje").value+"T12:00:00");
+ let total=new Date(h.getFullYear(),h.getMonth()+1,0).getDate();
+ let espv=(h.getDate()/total)*100;
+ let difv=p-espv;
+
+ let projv=(v/h.getDate())*total;
+
+ document.getElementById("perc").textContent=p.toFixed(2)+"%";
+ document.getElementById("esp").textContent=espv.toFixed(2)+"%";
+ document.getElementById("dif").textContent=(difv>=0?"+":"")+difv.toFixed(2)+"%";
+ document.getElementById("proj").textContent=br(projv);
+ document.getElementById("falta").textContent=br(f);
+ 
+ document.getElementById("media").textContent=br(md);
+
+ let esperadoValor=m*(espv/100);
+ let metaHoje=esperadoValor-v;
+ if(metaHoje>0){
+   document.getElementById("metaHoje").innerHTML="Falta vender <b>"+br(metaHoje)+"</b> para atingir a meta esperada.";
+ }else{
+   document.getElementById("metaHoje").innerHTML="🟢 Você está <b>"+br(Math.abs(metaHoje))+"</b> acima da meta esperada.";
+ }
+
+
+ if(projv>=m){
+   document.getElementById("previsao").textContent="🟢 Vai ultrapassar a meta em "+br(projv-m);
+ }else{
+   document.getElementById("previsao").textContent="🔴 Vai faltar "+br(m-projv)+" para atingir a meta";
+ }
+
+ document.getElementById("barra").style.width=Math.min(p,100)+"%";
+
+ if(difv>=0){
+   document.getElementById("barra").style.background="#009640";
+   document.getElementById("status").textContent="🟢 Excelente! Você está "+difv.toFixed(2)+"% acima do ritmo esperado.";
+ }else if(difv>=-10){
+   document.getElementById("barra").style.background="#FFC107";
+   document.getElementById("status").textContent="🟡 Atenção! Você está "+Math.abs(difv).toFixed(2)+"% abaixo do ritmo esperado.";
+ }else{
+   document.getElementById("barra").style.background="#E53935";
+   document.getElementById("status").textContent="🔴 Crítico! Você está "+Math.abs(difv).toFixed(2)+"% abaixo do ritmo esperado.";
+ }
+}
+
+
+function preencherRelatorio(){
+ {
+ const d=document.getElementById("hoje").value.split("-");
+ document.getElementById("rData").textContent=`${d[2]}/${d[1]}/${d[0]}`;
+}
+ document.getElementById("rMeta").textContent=document.getElementById("meta").value;
+ document.getElementById("rDom").textContent=document.getElementById("domingo").value||"R$ 0,00";
+ document.getElementById("rVend").textContent=document.getElementById("vendido").value;
+ document.getElementById("rDias").textContent=document.getElementById("dias").value;
+}
+
+function salvarPDF(){
+  preencherRelatorio();
+  window.print();
+}
+
+function imprimir(){
+  preencherRelatorio();
+  window.print();
+}
+
+function comp(){
+
+const statusTexto=document.getElementById("status").textContent;
+
+const t=`PAINEL DE METAS
+
+Meta: ${document.getElementById("meta").value}
+
+Vendido: ${document.getElementById("vendido").value}
+
+Percentual atingido: ${document.getElementById("perc").textContent}
+
+Percentual esperado: ${document.getElementById("esp").textContent}
+
+Projeção: ${document.getElementById("proj").textContent}
+
+Previsão: ${document.getElementById("previsao").textContent}
+
+Falta: ${document.getElementById("falta").textContent}
+
+Média diária necessária: ${document.getElementById("media").textContent}
+
+Meta de Hoje: ${document.getElementById("metaHoje").innerText}
+
+Status:
+${statusTexto}`;
+
+window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank");
+}
+
+
+function importarUltimoFechamento(){
+ const lista=JSON.parse(localStorage.getItem('fechamentos')||'[]');
+ if(lista.length===0){
+   alert('Nenhum fechamento encontrado.');
+   return;
+ }
+ lista.sort((a,b)=>new Date(b.data)-new Date(a.data));
+ const categoria=document.getElementById('categoriaMeta').value;
+ const filtrada=lista.filter(x=>{
+   const mapa={'metaVendaGeral':'🏪 Venda Geral','metaGenericos':'💊 Genérico e Similar','metaPerfumaria':'🧴 Perfumaria'};
+   return (x.categoria||'🏪 Venda Geral')===mapa[categoria];
+ });
+ const base=filtrada.length?filtrada:lista;
+ const ult=base.sort((a,b)=>new Date(b.data)-new Date(a.data))[0];
+ document.getElementById('vendido').value=ult.venda||'';
+ if(ult.data){
+   document.getElementById('hoje').value=ult.data;
+ }
+ calc();
+ alert('Último fechamento importado com sucesso. Atualize apenas o Total Vendido conforme as vendas do dia.');
+}
+
+
+function carregarMetaCategoria(){
+ const cfg=JSON.parse(localStorage.getItem('configuracoes')||'{}');
+ const chave=document.getElementById('categoriaMeta').value;
+ if(cfg[chave]){
+   document.getElementById('meta').value=cfg[chave];
+   const dados={
+     metaVendaGeral:{nome:'🏪 Venda Geral',cor:'#009640'},
+     metaGenericos:{nome:'💊 Genérico e Similar',cor:'#1565c0'},
+     metaPerfumaria:{nome:'🧴 Perfumaria',cor:'#8e24aa'}
+   };
+   const info=dados[chave];
+   const card=document.getElementById('infoCategoria');
+   card.textContent=info.nome+' • Meta: '+cfg[chave];
+   card.style.background=info.cor;
+   document.title='Painel de Metas - '+info.nome;
+   const titulo=document.querySelector('.card-principal h2');
+   if(titulo) titulo.textContent='📈 Painel de Metas - '+info.nome;
+ }
+}
+window.addEventListener('load',carregarMetaCategoria);
+
+function limpar(){
+["meta","vendido","dias","domingo"].forEach(id=>document.getElementById(id).value="");
+document.getElementById("perc").textContent="0%";document.getElementById("esp").textContent="0%";document.getElementById("dif").textContent="0%";
+document.getElementById("proj").textContent="R$ 0,00";document.getElementById("previsao").textContent="-";
+document.getElementById("falta").textContent="R$ 0,00";document.getElementById("media").textContent="R$ 0,00";
+document.getElementById("metaHoje").textContent="R$ 0,00";
+document.getElementById("status").textContent="Aguardando cálculo...";
+document.getElementById("barra").style.width="0%";
+}
+</script>
+</body></html>
