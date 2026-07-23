@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang='pt-BR'><head><meta charset='UTF-8'>
+<meta name='viewport' content='width=device-width,initial-scale=1'>
+<title>Cadastro da Rede</title>
+<style>
+body{font-family:Arial;background:#eef3f5;margin:0;padding:20px}
+.box{max-width:900px;margin:auto}
+.head{background:linear-gradient(135deg,#0a8f45,#18b85d);color:#fff;padding:20px;border-radius:14px;text-align:center}
+.card{background:#fff;padding:20px;margin-top:16px;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+label{font-weight:bold;font-size:14px}
+input,select{width:100%;padding:10px;border:1px solid #ccc;border-radius:8px}
+button{padding:12px 18px;border:none;border-radius:10px;background:#0a8f45;color:#fff;font-weight:bold;cursor:pointer;margin:5px}
+.info{background:#f5f5f5;padding:12px;border-radius:10px;margin-top:16px}
+</style></head>
+<body><div class='box'>
+<div class='head'><h1>🏢 Cadastro da Rede</h1><p>Painel de Metas 3.0</p></div>
+<div class='card'>
+<div class='grid'>
+<div><label>Razão Social</label><input id='razao'></div>
+<div><label>Nome Fantasia</label><input id='fantasia' value='Drogaria Ultrapopular'></div>
+
+<div><label>Diretor</label><input id='diretor'></div>
+<div><label>Telefone</label><input id='telefone'></div>
+<div><label>E-mail</label><input id='email'></div>
+<div><label>Cidade da Matriz</label><input id='cidade'></div>
+<div><label>UF</label><input id='uf' value='MS'></div>
+<div style='grid-column:1/-1'><label>Endereço</label><input id='endereco'></div>
+<div><label>Status</label><select id='status'><option>Ativa</option><option>Inativa</option></select></div>
+</div>
+<p>
+<button onclick='salvar()'>💾 Salvar Empresa</button>
+<button onclick='carregar()'>📂 Carregar</button>
+<button onclick='limpar()'>🧹 Limpar</button>
+<button onclick="location.href='index.html'">⬅️ Menu</button>
+</p>
+<div class='info'>
+<b>Informações da Rede</b><br>
+Lojas cadastradas: <span id='lojas'>0</span><br>
+Gestores cadastrados: <span id='gestores'>0</span><br>
+Funcionários cadastrados: <span id='funcionarios'>0</span>
+</div>
+</div></div>
+<script>
+function atualizar(){
+lojas.textContent=(JSON.parse(localStorage.getItem('lojas')||'[]')).length;
+gestores.textContent=(JSON.parse(localStorage.getItem('gestores')||'[]')).length;
+funcionarios.textContent=(JSON.parse(localStorage.getItem('funcionarios')||'[]')).length;
+}
+function salvar(){
+const e={razao:razao.value,fantasia:fantasia.value,diretor:diretor.value,telefone:telefone.value,email:email.value,cidade:cidade.value,uf:uf.value,endereco:endereco.value,status:status.value};
+localStorage.setItem('empresa',JSON.stringify(e));
+alert('Empresa salva com sucesso!');
+atualizar();
+}
+function carregar(){
+let e=JSON.parse(localStorage.getItem('empresa')||'null');
+if(!e)return alert('Nenhuma empresa cadastrada.');
+Object.keys(e).forEach(k=>{if(document.getElementById(k))document.getElementById(k).value=e[k];});
+atualizar();
+}
+function limpar(){document.querySelectorAll('input').forEach(i=>{if(i.id!='fantasia'&&i.id!='uf')i.value='';});status.value='Ativa';}
+carregar();atualizar();
+</script></body></html>

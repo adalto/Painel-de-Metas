@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tela de Cadastros</title>
+<style>
+body{font-family:Arial,sans-serif;background:#eef3f5;margin:0;padding:20px}
+.container{max-width:900px;margin:auto}
+.header{background:linear-gradient(135deg,#0a8f45,#18b85d);color:#fff;padding:22px;border-radius:14px;text-align:center}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:24px}
+.card{background:#fff;border-radius:14px;padding:24px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.15);cursor:pointer;text-decoration:none;color:#222}
+.card:hover{transform:translateY(-3px)}
+.icon{font-size:44px}
+h2{margin:10px 0}
+.footer{margin-top:24px;text-align:center}
+button{padding:12px 18px;border:none;border-radius:10px;background:#0a8f45;color:#fff;font-weight:bold;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<h1>📁 Central de Cadastros</h1>
+<p>Painel de Metas 3.0</p>
+</div>
+<div class="grid">
+<a class="card" href="cadastro_empresa.html">
+<div class="icon">🏢</div>
+<h2>Cadastro da Rede</h2>
+<p>Dados gerais da rede.</p>
+</a>
+
+<a class="card" href="cadastros3.0.html">
+<div class="icon">🏪</div>
+<h2>Cadastro de Lojas</h2>
+<p>Gerencie as unidades.</p>
+</a>
+
+<a class="card" href="cadastro_gestores.html">
+<div class="icon">👤</div>
+<h2>Cadastro de Gestores</h2>
+<p>Vincule gestores às lojas.</p>
+</a>
+
+<a class="card" href="cadastro_funcionarios.html">
+<div class="icon">👥</div>
+<h2>Cadastro de Funcionários</h2>
+<p>Cadastre os funcionários.</p>
+</a>
+
+<a class="card" href="cadastro_cargos.html"><div class="icon">🧾</div><h2>Cadastro de Cargos</h2><p>Gerencie os cargos.</p>
+</a>
+</div>
+
+<div class="footer">
+<button onclick="location.href='index.html'">⬅️ Menu Principal</button>
+</div>
+</div>
+
+
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cadastro de Funcionários</title>
+<style>
+body{font-family:Arial;background:#eef3f5;margin:0;padding:20px}
+.box{max-width:950px;margin:auto}.head{background:linear-gradient(135deg,#0a8f45,#18b85d);color:#fff;padding:20px;border-radius:14px;text-align:center}
+.card{background:#fff;padding:20px;margin-top:16px;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+input,select{width:100%;padding:10px;border:1px solid #ccc;border-radius:8px}
+button{padding:11px 16px;border:none;border-radius:10px;background:#0a8f45;color:#fff;font-weight:bold;margin:5px;cursor:pointer}
+</style></head><body>
+<div class="box">
+<div class="head"><h1>👥 Cadastro de Funcionários</h1><p>Painel de Metas 3.0</p></div>
+<div class="card">
+<div class="grid">
+<input id="nome" placeholder="Nome Completo">
+<input id="cpf" placeholder="CPF">
+<input id="telefone" placeholder="Telefone">
+<input id="email" placeholder="E-mail">
+<input id="login" placeholder="Login">
+<input id="senha" type="password" placeholder="Senha">
+<select id="loja"></select>
+<select id="cargo"></select>
+<select id="status"><option>Ativo</option><option>Inativo</option></select>
+</div>
+<p>
+<button onclick="salvar()">💾 Salvar</button>
+<button onclick="limpar()">🧹 Limpar</button>
+<button onclick="toggle()">📋 Funcionários Cadastrados</button>
+<button onclick="location.href='tela_cadastro.html'">⬅️ Cadastros</button>
+</p>
+<div id="painel" style="display:none">
+<select id="lista" onchange="carregar()" style="width:100%;padding:10px"></select><br><br>
+<button onclick="salvar()">✏️ Salvar Alterações</button>
+<button onclick="excluir()" style="background:#c62828">🗑️ Excluir</button>
+</div>
+</div></div>
+<script>
+let edit=-1;
+const lojas=()=>JSON.parse(localStorage.getItem('lojas')||'[]');
+const dados=()=>JSON.parse(localStorage.getItem('funcionarios')||'[]');
+const gravar=x=>localStorage.setItem('funcionarios',JSON.stringify(x));
+function carregarLojas(){loja.innerHTML='<option value="">Selecione a Loja</option>';lojas().forEach(l=>loja.innerHTML+=`<option value="${l.id}">${l.cidade}</option>`);}
+function carregarCargos(){let cs=JSON.parse(localStorage.getItem('cargos')||'[]');cargo.innerHTML='<option value="">Selecione o Cargo</option>';cs.filter(c=>c.status==="Ativo").forEach(c=>cargo.innerHTML+=`<option value="${c.nome}">${c.nome}</option>`);}
+function atualizar(){lista.innerHTML='<option value="">Selecione...</option>';dados().forEach((f,i)=>lista.innerHTML+=`<option value="${i}">${f.nome} - ${f.lojaNome}</option>`);}
+function salvar(){let a=dados();let l=lojas().find(x=>String(x.id)===loja.value);let o={nome:nome.value,cpf:cpf.value,telefone:telefone.value,email:email.value,login:login.value,senha:senha.value,cargo:cargo.value,lojaId:loja.value,lojaNome:l?l.cidade:'',status:status.value}; if(edit>=0)a[edit]=o; else a.push(o);gravar(a);limpar();atualizar();alert('Funcionário salvo!');}
+function carregar(){if(lista.value==='')return;edit=+lista.value;let f=dados()[edit];nome.value=f.nome;cpf.value=f.cpf;telefone.value=f.telefone;email.value=f.email;login.value=f.login;senha.value=f.senha;cargo.value=f.cargo;loja.value=f.lojaId;status.value=f.status;}
+function excluir(){if(edit<0)return;let a=dados();a.splice(edit,1);gravar(a);limpar();atualizar();}
+function limpar(){edit=-1;document.querySelectorAll('input').forEach(i=>i.value='');status.value='Ativo';loja.value='';}
+function toggle(){painel.style.display=painel.style.display==='none'?'block':'none';}
+carregarLojas();carregarCargos();atualizar();
+</script></body></html>

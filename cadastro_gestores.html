@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cadastro de Gestores</title>
+<style>
+body{font-family:Arial,sans-serif;background:#eef3f5;margin:0;padding:20px}
+.container{max-width:900px;margin:auto}
+.header{background:linear-gradient(135deg,#0a8f45,#18b85d);color:#fff;padding:20px;border-radius:14px;text-align:center}
+.card{background:#fff;padding:20px;margin-top:16px;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+label{font-weight:bold}
+input,select{width:100%;padding:10px;border:1px solid #ccc;border-radius:8px}
+button{padding:11px 16px;border:none;border-radius:10px;background:#0a8f45;color:#fff;font-weight:bold;margin:5px;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<h1>👤 Cadastro de Gestores</h1>
+<p>Painel de Metas 3.0</p>
+</div>
+
+<div class="card">
+<div class="grid">
+<div><label>Nome Completo</label><input id="nome"></div>
+<div><label>CPF</label><input id="cpf"></div>
+<div><label>Telefone</label><input id="telefone"></div>
+<div><label>E-mail</label><input id="email"></div>
+<div><label>Login</label><input id="login"></div>
+<div><label>Senha</label><input id="senha" type="password"></div>
+<div><label>Loja</label><select id="loja"></select></div>
+<div><label>Status</label><select id="status"><option>Ativo</option><option>Inativo</option></select></div>
+</div>
+
+<p>
+<button onclick="salvar()">💾 Salvar</button>
+<button onclick="limpar()">🧹 Limpar</button>
+<button onclick="toggleLista()">📋 Gestores Cadastrados</button>
+<button onclick="location.href='index.html'">⬅️ Menu</button>
+</p>
+
+<div id="painel" style="display:none">
+<select id="listaGestores" onchange="carregarGestor()" style="width:100%;padding:10px"></select>
+<p>
+<button onclick="salvar()">✏️ Salvar Alterações</button>
+<button onclick="excluir()" style="background:#c62828">🗑️ Excluir</button>
+</p>
+</div>
+</div>
+</div>
+
+<script>
+let edit=-1;
+const lojas=()=>JSON.parse(localStorage.getItem('lojas')||'[]');
+const gestores=()=>JSON.parse(localStorage.getItem('gestores')||'[]');
+const grava=x=>localStorage.setItem('gestores',JSON.stringify(x));
+
+function carregarLojas(){
+ let s=document.getElementById('loja');
+ s.innerHTML='<option value="">Selecione...</option>';
+ lojas().forEach(l=>s.innerHTML+=`<option value="${l.id}">${l.cidade}</option>`);
+}
+function atualizarLista(){
+ let s=document.getElementById('listaGestores');
+ s.innerHTML='<option value="">Selecione...</option>';
+ gestores().forEach((g,i)=>s.innerHTML+=`<option value="${i}">${g.nome} - ${g.lojaNome}</option>`);
+}
+function salvar(){
+ let gs=gestores();
+ let sel=lojas().find(l=>String(l.id)===loja.value);
+ let obj={nome:nome.value,cpf:cpf.value,telefone:telefone.value,email:email.value,login:login.value,senha:senha.value,lojaId:loja.value,lojaNome:sel?sel.cidade:'',status:status.value};
+ if(edit>=0) gs[edit]=obj; else gs.push(obj);
+ grava(gs);limpar();atualizarLista();alert('Gestor salvo!');
+}
+function carregarGestor(){
+ edit=listaGestores.value;
+ if(edit==="") return;
+ let g=gestores()[edit];
+ nome.value=g.nome;cpf.value=g.cpf;telefone.value=g.telefone;
+ email.value=g.email;login.value=g.login;senha.value=g.senha;
+ loja.value=g.lojaId;status.value=g.status;
+}
+function excluir(){
+ if(edit<0)return;
+ let gs=gestores();gs.splice(edit,1);grava(gs);
+ limpar();atualizarLista();
+}
+function limpar(){
+ edit=-1;
+ document.querySelectorAll('input').forEach(i=>i.value='');
+ status.value='Ativo';loja.value='';
+}
+function toggleLista(){
+ painel.style.display=painel.style.display==='none'?'block':'none';
+}
+carregarLojas();atualizarLista();
+</script>
+</body>
+</html>
