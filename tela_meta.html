@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tela Meta</title>
+<style>
+*{box-sizing:border-box;font-family:Arial,sans-serif}
+body{margin:0;background:#eef3f5;padding:20px}
+.container{max-width:1400px;margin:auto;padding:0 10px}
+.header{background:linear-gradient(135deg,#009640,#18b85d);color:#fff;padding:28px;border-radius:16px;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.card{background:#fff;margin-top:16px;padding:20px;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+label{font-weight:bold}
+input{width:100%;height:48px;padding:10px;border:1px solid #ccc;border-radius:8px;background:#f8f8f8}
+.actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-top:18px}
+button{padding:12px 18px;border:none;border-radius:10px;background:#009640;color:#fff;font-weight:bold;cursor:pointer}
+@media(max-width:900px){body{padding:10px}.grid{grid-template-columns:1fr}.actions{flex-direction:column}.actions button{width:100%}}
+
+.summary-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.kpi{padding:16px;border-radius:12px;color:#fff;font-weight:bold;text-align:center}
+.kpi.green{background:#1b8f3a}
+.kpi.blue{background:#1565c0}
+.kpi.purple{background:#7b1fa2}
+.kpi.status-ok{background:#2e7d32}
+.kpi.status-bad{background:#c62828}
+.kpi .valor{font-size:22px;margin-top:8px}
+@media(max-width:900px){.summary-cards{grid-template-columns:1fr}}
+
+@media(max-width:900px){
+table,thead{display:none}
+#tbEquipe{display:block}
+#tbEquipe tr{display:block;background:#fff;border:1px solid #ddd;border-radius:12px;margin-bottom:12px;padding:10px}
+#tbEquipe td{display:block;border:none!important;padding:4px 0!important;text-align:left!important}
+}
+
+.grid{align-items:end}
+input{box-sizing:border-box}
+.card{transition:.2s}
+.card:hover{box-shadow:0 10px 24px rgba(0,0,0,.18)}
+@media(min-width:901px){
+.grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media(max-width:900px){
+body{padding:10px}
+.header{padding:18px}
+.header h1{font-size:26px}
+.card{padding:16px}
+button{height:50px;font-size:16px}
+input{height:50px;font-size:16px}
+}
+@media print{body{background:#fff;padding:0}.actions{display:none}.header,.card{box-shadow:none}.card{border:1px solid #ccc;break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<h1>📋 Tela de Metas</h1>
+<p>Painel de Metas 3.0 - Versão 1.0</p>
+</div>
+<div class="card">
+<h2>Informações</h2>
+<div class="grid">
+<div><label>🏢 Empresa</label><input id="empresa" readonly></div>
+<div><label>🏪 Loja</label><input id="loja" readonly></div>
+<div>
+<label>📅 Competência</label>
+<input id="competencia" readonly>
+<select id="competenciaSelect" style="display:none;width:100%;height:48px;border:1px solid #ccc;border-radius:8px;margin-top:6px" onchange="selecionarCompetencia()"></select>
+</div>
+<div><label>👤 Gestor</label>
+<input id="gestor" readonly>
+<select id="gestorSelect" onchange="selecionarGestor()" style="display:none;width:100%;height:48px;border:1px solid #ccc;border-radius:8px;margin-top:6px"></select>
+</div>
+</div>
+<div class="actions">
+<button onclick="carregar()">🔄 Atualizar</button>
+<button onclick="window.print()">🖨️ Imprimir</button>
+<button onclick="exportarPDF()">📄 Exportar PDF</button>
+<button onclick="location.href='menu.html'">⬅️ Menu</button>
+</div>
+</div>
+
+<div class="card">
+<h2>🎯 Meta da Loja</h2>
+<div class="grid" style="grid-template-columns:repeat(3,minmax(0,1fr));">
+<div><label>👥 Venda Geral</label><input id="metaVG" readonly></div>
+<div><label>💊 Genérico e Similar</label><input id="metaGEN" readonly></div>
+<div><label>🧴 Perfumaria</label><input id="metaPERF" readonly></div>
+</div>
+</div>
+
+
+<div class="card">
+<h2>👥 Metas da Equipe</h2>
+<table style="width:100%;border-collapse:collapse">
+<thead>
+<tr style="background:#009640;color:#fff">
+<th style="padding:10px">Funcionário</th>
+<th>Cargo</th>
+<th>Venda Geral</th>
+<th>Gen./Similar</th>
+<th>Perfumaria</th>
+</tr>
+</thead>
+<tbody id="tbEquipe"></tbody>
+</table>
+</div>
+
+
+<div class="card">
+<h2>📊 Resumo das Metas</h2>
+<div class="summary-cards">
+<div class="kpi green"><div>👥 Venda Geral</div><div class="valor" id="cardVG">0,00</div></div>
+<div class="kpi blue"><div>💊 Gen./Similar</div><div class="valor" id="cardGEN">0,00</div></div>
+<div class="kpi purple"><div>🧴 Perfumaria</div><div class="valor" id="cardPERF">0,00</div></div>
+<div class="kpi status-ok" id="statusCard"><div>✅ Conferência</div><div class="valor" id="cardCONF">OK</div></div>
+<input id="totVG" type="hidden"><input id="totGEN" type="hidden"><input id="totPERF" type="hidden"><input id="conf" type="hidden">
+</div>
+</div>
+
+</div>
+<script>
+function carregar(){
+const lista=JSON.parse(localStorage.getItem('lancamentos')||'[]');
+if(lista.length===0){alert('Nenhum lançamento encontrado.');return;}
+const sessao=JSON.parse(localStorage.getItem('sessaoUsuario')||'{}');
+let l=lista.findLast?lista.findLast(x=>
+ (!sessao.empresa||x.empresa===sessao.empresa)&&
+ (!sessao.loja||x.loja===sessao.loja)
+):null;
+if(!l) l=lista[lista.length-1];
+empresa.value=l.empresa||'';
+loja.value=l.loja||'';
+competencia.value=l.competencia||'';
+gestor.value=l.gestor||'';
+if(l.metaLoja){
+metaVG.value=l.metaLoja.vendaGeral||'';
+metaGEN.value=l.metaLoja.generico||'';
+metaPERF.value=l.metaLoja.perfumaria||'';
+}
+const tb=document.getElementById('tbEquipe');
+tb.innerHTML='';
+(l.funcionarios||[]).forEach(f=>{
+tb.innerHTML+=`<tr>
+<td style="padding:8px;border-bottom:1px solid #ddd">${f.nome||''}</td>
+<td style="border-bottom:1px solid #ddd">${f.cargo||''}</td>
+<td style="text-align:right;border-bottom:1px solid #ddd">${f.vendaGeral||''}</td>
+<td style="text-align:right;border-bottom:1px solid #ddd">${f.generico||''}</td>
+<td style="text-align:right;border-bottom:1px solid #ddd">${f.perfumaria||''}</td>
+</tr>`;
+});
+let vg=0,ge=0,pe=0;
+(l.funcionarios||[]).forEach(f=>{
+vg+=parseFloat(String(f.vendaGeral||0).replace('.','').replace(',','.'))||0;
+ge+=parseFloat(String(f.generico||0).replace('.','').replace(',','.'))||0;
+pe+=parseFloat(String(f.perfumaria||0).replace('.','').replace(',','.'))||0;
+});
+totVG.value=vg.toLocaleString('pt-BR',{minimumFractionDigits:2});
+totGEN.value=ge.toLocaleString('pt-BR',{minimumFractionDigits:2});
+totPERF.value=pe.toLocaleString('pt-BR',{minimumFractionDigits:2});
+conf.value=(metaVG.value==totVG.value && metaGEN.value==totGEN.value && metaPERF.value==totPERF.value)?'OK':'Divergente';
+cardVG.textContent=totVG.value;
+cardGEN.textContent=totGEN.value;
+cardPERF.textContent=totPERF.value;
+cardCONF.textContent=conf.value;
+statusCard.className='kpi '+(conf.value==='OK'?'status-ok':'status-bad');
+}
+function exportarPDF(){window.print();}
+
+function prepararFiltroGestor(){
+ const sessao=JSON.parse(localStorage.getItem('sessaoUsuario')||'{}');
+ const sel=document.getElementById('gestorSelect');
+ const inp=document.getElementById('gestor');
+ if(!sel || sessao.perfil!=='Diretor') return;
+ inp.style.display='none';
+ sel.style.display='block';
+ const gestores=JSON.parse(localStorage.getItem('gestores')||'[]');
+ sel.innerHTML='<option value="">Selecione um gestor</option>';
+ gestores.forEach(g=>{
+   const op=document.createElement('option');
+   op.value=g.nome||g.usuario||'';
+   op.textContent=g.nome||g.usuario||'';
+   sel.appendChild(op);
+ });
+}
+
+
+function selecionarGestor(){
+ const nome=document.getElementById('gestorSelect').value;
+ if(!nome) return;
+ const gestores=JSON.parse(localStorage.getItem('gestores')||'[]');
+ const g=gestores.find(x=>(x.nome||x.usuario||'')===nome);
+ if(!g) return;
+
+ if(document.getElementById('gestor')) document.getElementById('gestor').value=nome;
+ if(document.getElementById('loja')) document.getElementById('loja').value=g.lojaNome||g.loja||'';
+ if(document.getElementById('empresa')) document.getElementById('empresa').value=g.empresa||document.getElementById('empresa').value;
+
+ const lista=JSON.parse(localStorage.getItem('lancamentos')||'[]');
+ const lanc=lista.findLast?lista.findLast(l=>
+   ((!document.getElementById('competenciaSelect') || !document.getElementById('competenciaSelect').value || l.competencia===document.getElementById('competenciaSelect').value) && ((l.gestor===nome) ||
+   ((g.lojaNome||g.loja||'') && l.loja===(g.lojaNome||g.loja||''))))
+ ):null;
+
+ if(lanc){
+   document.getElementById('competencia').value=lanc.competencia||'';
+   if(lanc.metaLoja){
+     metaVG.value=lanc.metaLoja.vendaGeral||'';
+     metaGEN.value=lanc.metaLoja.generico||'';
+     metaPERF.value=lanc.metaLoja.perfumaria||'';
+   atualizarEquipeResumo(lanc);
+   }
+ }
+}
+
+
+
+function atualizarEquipeResumo(lanc){
+ const tb=document.getElementById('tbEquipe');
+ if(!tb||!lanc) return;
+ tb.innerHTML='';
+ let vg=0,ge=0,pe=0;
+ (lanc.funcionarios||[]).forEach(f=>{
+   tb.innerHTML+=`<tr>
+   <td style="padding:8px;border-bottom:1px solid #ddd">${f.nome||''}</td>
+   <td style="border-bottom:1px solid #ddd">${f.cargo||''}</td>
+   <td style="text-align:right;border-bottom:1px solid #ddd">${f.vendaGeral||''}</td>
+   <td style="text-align:right;border-bottom:1px solid #ddd">${f.generico||''}</td>
+   <td style="text-align:right;border-bottom:1px solid #ddd">${f.perfumaria||''}</td>
+   </tr>`;
+   vg+=parseFloat(String(f.vendaGeral||0).replace('.','').replace(',','.'))||0;
+   ge+=parseFloat(String(f.generico||0).replace('.','').replace(',','.'))||0;
+   pe+=parseFloat(String(f.perfumaria||0).replace('.','').replace(',','.'))||0;
+ });
+ const vgTxt=vg.toLocaleString('pt-BR',{minimumFractionDigits:2});
+ const geTxt=ge.toLocaleString('pt-BR',{minimumFractionDigits:2});
+ const peTxt=pe.toLocaleString('pt-BR',{minimumFractionDigits:2});
+
+ cardVG.textContent=vgTxt;
+ cardGEN.textContent=geTxt;
+ cardPERF.textContent=peTxt;
+
+ totVG.value=vgTxt;
+ totGEN.value=geTxt;
+ totPERF.value=peTxt;
+
+ const ok=(metaVG.value===vgTxt && metaGEN.value===geTxt && metaPERF.value===peTxt);
+ conf.value=ok?'OK':'Divergente';
+ cardCONF.textContent=conf.value;
+ statusCard.className='kpi '+(ok?'status-ok':'status-bad');
+}
+
+
+function prepararCompetencias(){
+ const sessao=JSON.parse(localStorage.getItem('sessaoUsuario')||'{}');
+ if(sessao.perfil!=='Diretor') return;
+ const sel=document.getElementById('competenciaSelect');
+ if(!sel) return;
+ sel.style.display='block';
+ const lista=JSON.parse(localStorage.getItem('lancamentos')||'[]');
+ const unicas=[...new Set(lista.map(x=>x.competencia).filter(Boolean))].sort().reverse();
+ sel.innerHTML='<option value="">Todas as competências</option>';
+ unicas.forEach(c=>{
+   const op=document.createElement('option');
+   op.value=c; op.textContent=c;
+   sel.appendChild(op);
+ });
+}
+function selecionarCompetencia(){
+ const comp=document.getElementById('competenciaSelect').value;
+ document.getElementById('competencia').value=comp;
+ const gestorSel=document.getElementById('gestorSelect');
+ if(gestorSel && gestorSel.value){
+   selecionarGestor();
+ }else{
+   carregar();
+ }
+}
+
+window.onload=function(){carregar();prepararFiltroGestor();prepararCompetencias();ajustarMobile();};
+
+function ajustarMobile(){
+ if(window.innerWidth>900) return;
+ document.querySelectorAll('#tbEquipe tr').forEach(tr=>{
+   const tds=tr.querySelectorAll('td');
+   if(tds.length<5) return;
+   tds[0].innerHTML='👤 <strong>'+tds[0].innerHTML+'</strong>';
+   tds[1].innerHTML='💼 '+tds[1].innerHTML;
+   tds[2].innerHTML='👥 Venda Geral: '+tds[2].innerHTML;
+   tds[3].innerHTML='💊 Gen./Similar: '+tds[3].innerHTML;
+   tds[4].innerHTML='🧴 Perfumaria: '+tds[4].innerHTML;
+ });
+}
+
+</script>
+</body>
+</html>

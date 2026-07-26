@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Perfil de Acesso</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#e8f5e9,#f4f7fb);display:flex;justify-content:center;padding:20px}
+.wrap{max-width:860px;width:100%}
+.card{background:#fff;border-radius:24px;padding:28px;box-shadow:0 10px 30px rgba(0,0,0,.12)}
+h1{text-align:center;color:#009640;margin:0}
+p{text-align:center;color:#666}
+.opcao{padding:22px;border-radius:18px;color:#fff;font-weight:bold;margin:14px 0;cursor:pointer;transition:.2s;box-shadow:0 6px 18px rgba(0,0,0,.15)} .opcao:hover{transform:translateY(-2px)}
+.gestor{background:#009640}
+.atendente{background:#1565c0}
+#areaAtendente{display:none;margin-top:16px}
+select,button{width:100%;padding:12px;border-radius:10px;margin-top:10px}
+button{border:none;background:#009640;color:#fff;font-weight:bold}
+.sec{background:#666}
+
+@media (min-width:768px){
+.wrap{max-width:700px}
+.card{padding:32px}
+.opcao{padding:24px;font-size:20px}
+}
+@media (max-width:767px){#cards{display:block!important}.wrap{max-width:100%}
+body{padding:12px}
+.card{padding:18px}
+div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr !important;}
+button{font-size:16px}
+}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="card">
+<h1>📊 Painel de Metas</h1><div style='margin-top:8px;font-size:14px;color:#666'>Escolha o perfil para acessar o Dashboard</div>
+<p id='tituloLoja'>Selecione o perfil de acesso</p>
+
+<div style='display:grid;grid-template-columns:1fr 1fr;gap:16px' id='cards'><div class="opcao gestor" style="text-align:center;box-shadow:0 4px 14px rgba(0,150,64,.35)" onclick="entrarGestor()" style="text-align:center">
+👨‍💼 GESTOR<br><small>Acesso às metas da loja</small>
+</div>
+
+<div class="opcao atendente" onclick="mostrarAtendente()" style="text-align:center">
+👤 ATENDENTE<br><small>Acesso às metas individuais</small>
+</div></div>
+
+<div id="areaAtendente">
+<label style="display:block;margin:10px 0 4px;font-weight:bold;color:#333">Selecione o atendente</label>
+<select id="lista" style="margin-top:8px"></select>
+<button id="btnEntrarAt" onclick="entrarAtendente()" disabled style="background:#1565c0">🚀 Entrar no Dashboard</button>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px">
+<button class="sec" onclick="window.location.href='index.html'">⬅ Menu</button>
+<button onclick="window.location.href='configuracoes3.0.html'" style="background:#ff9800">⚙️ Configurações da Loja</button>
+</div>
+<div style="text-align:center;color:#777;margin-top:18px;font-size:12px">
+Painel de Metas<br>Versão 3.0<br><b>by Adalto Silva</b>
+</div>
+</div>
+</div>
+
+<script>
+
+
+function carregarLista(){
+ const lista=JSON.parse(localStorage.getItem('equipe')||'[]');
+ const sel=document.getElementById('lista');
+ sel.innerHTML='<option value="">Selecione o atendente</option>';
+ lista.forEach(a=>{
+   const op=document.createElement('option');
+   op.value=a.nome; op.textContent=a.nome;
+   sel.appendChild(op);
+ });
+ sel.onchange=()=>{document.getElementById('btnEntrarAt').disabled=!sel.value;};
+}
+
+
+function mostrarAtendente(){
+ carregarLista();
+ document.getElementById('areaAtendente').style.display='block';
+}
+function entrarGestor(){
+ localStorage.setItem('perfilAcesso',JSON.stringify({perfil:'gestor'}));
+ window.location.href='dashboard3.0.html';
+}
+function entrarAtendente(){
+ localStorage.setItem('perfilAcesso',JSON.stringify({
+   perfil:'atendente',
+   atendente:document.getElementById('lista').value
+ }));
+ window.location.href='dashboard3.0.html';
+}
+
+function carregarPerfis(){
+ const cfg=JSON.parse(localStorage.getItem('configuracoes')||'{}');
+ const titulo=document.getElementById('tituloLoja');
+ if(cfg.loja){
+   titulo.innerHTML='🏪 <b>'+cfg.loja+'</b><br><br>Selecione quem irá acessar o Painel de Metas';
+ }
+ const gestor=document.querySelector('.gestor');
+ gestor.innerHTML='👨‍💼 '+(cfg.gestor||'Gestor')+'<br><small>Acesso às metas da loja</small>';
+}
+window.addEventListener('load',carregarPerfis);
+</script>
+</body>
+</html>

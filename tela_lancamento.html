@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Tela Lançamento</title><style>body{font-family:Arial;background:#f2f4f7;margin:0;padding:20px}.container{max-width:1000px;margin:auto}.header{background:#009640;color:#fff;padding:20px;border-radius:12px;text-align:center}.card{background:#fff;margin-top:18px;padding:20px;border-radius:12px;box-shadow:0 3px 10px rgba(0,0,0,.1)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}label{font-weight:bold}input,select{width:100%;padding:10px;border:1px solid #ccc;border-radius:8px}button{padding:12px 18px;border:none;border-radius:8px;background:#009640;color:#fff;margin-right:8px;margin-top:15px}@media(max-width:700px){.grid{grid-template-columns:1fr}}
+.grid{grid-template-columns:repeat(4,minmax(180px,1fr));align-items:end}
+.card h2{margin-top:0;color:#009640}
+.buttons{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-top:18px}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{padding:10px;border:1px solid #ddd;text-align:center}
+th{background:#009640;color:#fff}
+tbody tr:nth-child(even){background:#f8f8f8}
+input[type=text],input[type=month],select{height:42px}
+.resumo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.resumo-item{background:#f7f7f7;border-left:5px solid #009640;padding:12px;border-radius:8px}
+@media(max-width:900px){.grid,.resumo-grid{grid-template-columns:1fr}}
+
+.info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.info-grid .full{grid-column:1/-1}
+.meta-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.meta-grid input,.info-grid input,.info-grid select,.meta-grid select{width:100%;min-width:0;box-sizing:border-box}
+@media(max-width:900px){.info-grid,.meta-grid{grid-template-columns:1fr}}
+
+.boxfix{}
+.container{max-width:1400px;padding:0 12px;box-sizing:border-box}
+input,select{box-sizing:border-box;min-width:0;height:48px}
+.buttons button{min-width:170px}
+@media(min-width:901px){
+.info-grid{grid-template-columns:repeat(3,1fr)}
+.meta-grid{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:900px){
+body{padding:10px}
+.container{padding:0}
+.header{padding:16px}
+.header h1{font-size:24px}
+.card{padding:15px}
+.buttons{flex-direction:column}
+.buttons button{width:100%;margin:0}
+table,thead{display:none}
+#tbFuncionarios{display:block}
+#tbFuncionarios tr{display:block;border:1px solid #ddd;border-radius:10px;padding:10px;margin-bottom:12px;background:#fff}
+#tbFuncionarios td{display:block;border:none;text-align:left;padding:6px 0}
+.resumo-grid{grid-template-columns:1fr}
+}
+</style></head><body><div class="container"><div class="header"><h1>📋 Lançamento de Metas</h1><p>Versão 1.0</p></div><div class="card"><h2>Informações</h2><div class="info-grid"><div><label>Empresa</label><select id="empresa"><option>Carregando empresas...</option></select></div><div><label>Loja</label><select id="loja"><option>Selecione a empresa</option></select></div><div><label>Competência</label><input id="competencia" type="month"/></div><div class="full"><label>Gestor</label><input id="gestor" placeholder="Automático" readonly=""/></div></div></div><div class="card"><h2>🏪 Meta da Loja</h2><div class="meta-grid"><div><label>Venda Geral</label><input class="money" id="metaVG" placeholder="0,00"/></div><div><label>Genérico</label><input class="money" id="metaGEN" placeholder="0,00"/></div><div><label>Perfumaria</label><input class="money" id="metaPERF" placeholder="0,00"/></div></div><div class="buttons"><button>💾 Salvar</button><button onclick="limpar()">🧹 Limpar</button><button onclick="location.href='index.html'">⬅ Menu</button></div></div>
+<div class="card">
+<h2>👥 Metas dos Funcionários</h2>
+<table style="width:100%;border-collapse:collapse">
+<thead>
+<tr style="background:#009640;color:#fff">
+<th>Funcionário</th><th>Cargo</th><th>Venda Geral</th><th>Genérico</th><th>Perfumaria</th><th>Status</th>
+</tr>
+</thead>
+<tbody id="tbFuncionarios"></tbody>
+</table>
+</div>
+<script>
+function carregarFuncionarios(){
+ const loja=document.getElementById('loja').value;
+ const gestor=document.getElementById('gestor').value;
+ const lista=JSON.parse(localStorage.getItem('funcionarios')||'[]');
+ const tb=document.getElementById('tbFuncionarios');
+ if(!tb) return;
+ tb.innerHTML='';
+ if(!loja || !gestor){ return; }
+ lista.filter(f=>!loja || String(f.lojaId||f.loja)===String(loja)).forEach(f=>{
+  tb.innerHTML+=`<tr>
+  <td>${f.nome||''}</td>
+  <td>${f.cargo||''}</td>
+  <td><input class="money" value="0,00"></td>
+  <td><input class="money" value="0,00"></td>
+  <td><input class="money" value="0,00"></td>
+  <td>🟢</td>
+  </tr>`;
+ });
+}
+document.getElementById('loja').addEventListener('change',carregarFuncionarios);
+
+</script>
+<div class="card">
+<h2>📊 Resumo das Metas</h2>
+<div class="resumo-grid">
+<div class="resumo-item"><strong>👥 Total Venda Geral</strong><br/><span id="totVG">0,00</span></div>
+<div class="resumo-item"><strong>💊 Total Genérico</strong><br/><span id="totGEN">0,00</span></div>
+<div class="resumo-item"><strong>🧴 Total Perfumaria</strong><br/><span id="totPERF">0,00</span></div>
+<div class="resumo-item"><strong>✔ Situação</strong><br/><span id="situacao">Aguardando</span></div>
+</div></div>
+<script>
+function carregarLojas(){
+ const emp=JSON.parse(localStorage.getItem('empresa')||'null');
+ const lojaSel=document.getElementById('loja');
+ const gestor=document.getElementById('gestor');
+ lojaSel.innerHTML='<option value="">Selecione uma loja</option>';
+ gestor.value='';
+ if(!emp) return;
+ const lojas=JSON.parse(localStorage.getItem('lojas')||'[]');
+ const nomeEmpresa=(emp.fantasia||emp.razao||emp.nome||'').trim();
+const filtradas=lojas.filter(l=>
+ String(l.empresaId||'')===String(emp.id||1) ||
+ (l.empresa||'').trim()===nomeEmpresa
+);
+ filtradas.forEach((l,i)=>{
+   const op=document.createElement('option');
+   op.value=l.id||i;
+   op.textContent=l.cidade||l.nome||('Loja '+(i+1));
+   lojaSel.appendChild(op);
+ });
+}
+document.getElementById('empresa').addEventListener('change',carregarLojas);
+
+</script>
+</div><script>function carregarEmpresas(){
+ const emp=JSON.parse(localStorage.getItem("empresa")||"null");
+ const s=document.getElementById("empresa");
+ s.innerHTML='<option value="">Selecione uma empresa</option>';
+ if(!emp){
+   s.innerHTML='<option value="">Nenhuma empresa cadastrada</option>';
+   return;
+ }
+ const op=document.createElement("option");
+ op.value=emp.id||"1";
+ op.textContent=emp.fantasia||emp.razao||emp.nome||"Empresa";
+ s.appendChild(op);
+ s.value=op.value;
+ carregarLojas();
+}
+function limpar(){document.querySelectorAll("input").forEach(i=>{if(i.type!=="month")i.value=""})}
+window.addEventListener('load',()=>{
+ carregarEmpresas();
+ setTimeout(aplicarSessaoEmpresa,150);
+});
+function formatMoney(v){
+ v=v.replace(/\D/g,'');
+ if(v==='') return '';
+ v=(parseInt(v,10)/100).toLocaleString('pt-BR',{minimumFractionDigits:2});
+ return v;
+}
+document.addEventListener('input',e=>{
+ if(e.target.classList.contains('money')){
+   e.target.value=formatMoney(e.target.value);
+ }
+});
+
+function atualizarResumo(){
+ let vg=0,gen=0,perf=0;
+ document.querySelectorAll('#tbFuncionarios tr').forEach(tr=>{
+   const vals=tr.querySelectorAll('input.money');
+   if(vals.length===3){
+     const conv=v=>Number((v.value||'0').replace(/\./g,'').replace(',','.'))||0;
+     vg+=conv(vals[0]); gen+=conv(vals[1]); perf+=conv(vals[2]);
+   }
+ });
+ document.getElementById('totVG').textContent=vg.toLocaleString('pt-BR',{minimumFractionDigits:2});
+ document.getElementById('totGEN').textContent=gen.toLocaleString('pt-BR',{minimumFractionDigits:2});
+ document.getElementById('totPERF').textContent=perf.toLocaleString('pt-BR',{minimumFractionDigits:2});
+}
+document.addEventListener('input',e=>{
+ if(e.target.classList.contains('money')){
+   setTimeout(atualizarResumo,0);
+ }
+});
+window.addEventListener('load',()=>setTimeout(atualizarResumo,100));
+
+
+function valorCampo(id){
+ const el=document.getElementById(id);
+ if(!el) return 0;
+ return Number((el.value||'0').replace(/\./g,'').replace(',','.'))||0;
+}
+function conferirMetas(){
+ const metaVG=valorCampo('metaVG');
+ const metaGEN=valorCampo('metaGEN');
+ const metaPERF=valorCampo('metaPERF');
+
+ const totVG=Number((document.getElementById('totVG').textContent||'0').replace(/\./g,'').replace(',','.'))||0;
+ const totGEN=Number((document.getElementById('totGEN').textContent||'0').replace(/\./g,'').replace(',','.'))||0;
+ const totPERF=Number((document.getElementById('totPERF').textContent||'0').replace(/\./g,'').replace(',','.'))||0;
+
+ const ok = metaVG===totVG && metaGEN===totGEN && metaPERF===totPERF;
+ const sit=document.getElementById('situacao');
+ if(ok){
+   sit.textContent='🟢 Conferido';
+   sit.style.color='green';
+ }else{
+   const dif=(metaVG-totVG)+(metaGEN-totGEN)+(metaPERF-totPERF);
+   sit.textContent='🔴 Diferença: '+dif.toLocaleString('pt-BR',{minimumFractionDigits:2});
+   sit.style.color='red';
+ }
+}
+document.addEventListener('input',e=>{
+ if(e.target.classList.contains('money')){
+   setTimeout(conferirMetas,0);
+ }
+});
+window.addEventListener('load',()=>setTimeout(conferirMetas,150));
+
+
+function salvarLancamento(){
+ const registro={
+   empresa:document.getElementById('empresa').value,
+   loja:document.getElementById('loja').value,
+   competencia:document.getElementById('competencia').value,
+   gestor:document.getElementById('gestor').value,
+   metaLoja:{
+     vendaGeral:document.getElementById('metaVG').value,
+     generico:document.getElementById('metaGEN').value,
+     perfumaria:document.getElementById('metaPERF').value
+   },
+   funcionarios:[],
+   dataHora:new Date().toISOString()
+ };
+ document.querySelectorAll('#tbFuncionarios tr').forEach(tr=>{
+   const td=tr.querySelectorAll('td');
+   const inp=tr.querySelectorAll('input');
+   registro.funcionarios.push({
+      nome:td[0]?.innerText||'',
+      cargo:td[1]?.innerText||'',
+      vendaGeral:inp[0]?.value||'0,00',
+      generico:inp[1]?.value||'0,00',
+      perfumaria:inp[2]?.value||'0,00'
+   });
+ });
+ const lista=JSON.parse(localStorage.getItem('lancamentos')||'[]');
+ lista.push(registro);
+ localStorage.setItem('lancamentos',JSON.stringify(lista));
+ alert('Lançamento salvo com sucesso!');
+}
+document.querySelector('.buttons button').onclick=salvarLancamento;
+
+
+function existeLancamento(reg){
+ const lista=JSON.parse(localStorage.getItem('lancamentos')||'[]');
+ return lista.findIndex(x=>x.empresa===reg.empresa && x.loja===reg.loja && x.competencia===reg.competencia);
+}
+const _salvarOriginal=salvarLancamento;
+salvarLancamento=function(){
+ const reg={
+   empresa:document.getElementById('empresa').value,
+   loja:document.getElementById('loja').value,
+   competencia:document.getElementById('competencia').value
+ };
+ const idx=existeLancamento(reg);
+ if(idx>=0){
+   if(!confirm('Já existe um lançamento para esta competência. Deseja atualizar?')) return;
+   const lista=JSON.parse(localStorage.getItem('lancamentos')||'[]');
+   lista.splice(idx,1);
+   localStorage.setItem('lancamentos',JSON.stringify(lista));
+ }
+ _salvarOriginal();
+}
+document.querySelector('.buttons button').onclick=salvarLancamento;
+
+
+// ===== Abrir lançamento existente =====
+function abrirLancamento(){
+ const lista=JSON.parse(localStorage.getItem('lancamentos')||'[]');
+ const emp=document.getElementById('empresa').value;
+ const loja=document.getElementById('loja').value;
+ const comp=document.getElementById('competencia').value;
+ const reg=lista.find(x=>x.empresa===emp && x.loja===loja && x.competencia===comp);
+ if(!reg){
+   alert('Nenhum lançamento encontrado para os filtros informados.');
+   return;
+ }
+ document.getElementById('gestor').value=reg.gestor||'';
+ document.getElementById('metaVG').value=reg.metaLoja.vendaGeral||'0,00';
+ document.getElementById('metaGEN').value=reg.metaLoja.generico||'0,00';
+ document.getElementById('metaPERF').value=reg.metaLoja.perfumaria||'0,00';
+
+ const tb=document.getElementById('tbFuncionarios');
+ tb.innerHTML='';
+ (reg.funcionarios||[]).forEach(f=>{
+   tb.innerHTML+=`<tr>
+   <td>${f.nome||''}</td>
+   <td>${f.cargo||''}</td>
+   <td><input class="money" value="${f.vendaGeral||'0,00'}"></td>
+   <td><input class="money" value="${f.generico||'0,00'}"></td>
+   <td><input class="money" value="${f.perfumaria||'0,00'}"></td>
+   <td>🟢</td>
+   </tr>`;
+ });
+ atualizarResumo();
+ conferirMetas();
+ alert('Lançamento carregado com sucesso!');
+}
+const barra=document.querySelector('.buttons');
+const btn=document.createElement('button');
+btn.textContent='📂 Abrir';
+btn.onclick=abrirLancamento;
+barra.insertBefore(btn,barra.firstChild);
+
+
+// ===== Copiar metas do mês anterior =====
+function copiarMesAnterior(){
+ const lista=JSON.parse(localStorage.getItem('lancamentos')||'[]');
+ const emp=document.getElementById('empresa').value;
+ const loja=document.getElementById('loja').value;
+ const comp=document.getElementById('competencia').value;
+ if(!comp){ alert('Selecione a competência.'); return; }
+ const [ano,mes]=comp.split('-').map(Number);
+ let antMes=mes-1, antAno=ano;
+ if(antMes===0){ antMes=12; antAno--; }
+ const chave=`${antAno}-${String(antMes).padStart(2,'0')}`;
+ const reg=lista.find(x=>x.empresa===emp && x.loja===loja && x.competencia===chave);
+ if(!reg){
+   alert('Não foi encontrado lançamento do mês anterior.');
+   return;
+ }
+ document.getElementById('metaVG').value=reg.metaLoja.vendaGeral||'0,00';
+ document.getElementById('metaGEN').value=reg.metaLoja.generico||'0,00';
+ document.getElementById('metaPERF').value=reg.metaLoja.perfumaria||'0,00';
+
+ const tb=document.getElementById('tbFuncionarios');
+ tb.innerHTML='';
+ (reg.funcionarios||[]).forEach(f=>{
+   tb.innerHTML+=`<tr>
+   <td>${f.nome||''}</td>
+   <td>${f.cargo||''}</td>
+   <td><input class="money" value="${f.vendaGeral||'0,00'}"></td>
+   <td><input class="money" value="${f.generico||'0,00'}"></td>
+   <td><input class="money" value="${f.perfumaria||'0,00'}"></td>
+   <td>🟢</td>
+   </tr>`;
+ });
+ atualizarResumo();
+ conferirMetas();
+
+ const linhas=document.querySelectorAll('#tbFuncionarios tr');
+ reg.funcionarios.forEach((f,i)=>{
+   if(!linhas[i]) return;
+   const ins=linhas[i].querySelectorAll('input');
+   if(ins.length>=3){
+      ins[0].value=f.vendaGeral;
+      ins[1].value=f.generico;
+      ins[2].value=f.perfumaria;
+   }
+ });
+ atualizarResumo();
+ conferirMetas();
+ alert('Metas do mês anterior copiadas.');
+}
+const btnCopiar=document.createElement('button');
+btnCopiar.textContent='📋 Copiar Mês Anterior';
+btnCopiar.onclick=copiarMesAnterior;
+document.querySelector('.buttons').insertBefore(btnCopiar,document.querySelector('.buttons').children[1]);
+
+
+
+
+// ===== Integração da Empresa com a Sessão =====
+function aplicarSessaoEmpresa(){
+ const sessao=JSON.parse(localStorage.getItem('sessaoUsuario')||'null');
+ if(!sessao) return;
+ const empresa=document.getElementById('empresa');
+ if(sessao.perfil==='Diretor'){
+   empresa.disabled=false;
+   return;
+ }
+ [...empresa.options].forEach(op=>{
+   if(op.text.trim()===(sessao.empresa||'').trim()) empresa.value=op.value;
+ });
+ empresa.disabled=true;
+ carregarLojas();
+ setTimeout(aplicarSessaoLoja,100);
+}
+
+
+// ===== Integração da Loja com a Sessão =====
+function aplicarSessaoLoja(){
+ const sessao=JSON.parse(localStorage.getItem('sessaoUsuario')||'null');
+ if(!sessao) return;
+
+ const loja=document.getElementById('loja');
+
+ if(sessao.perfil==='Diretor'){
+   loja.disabled=false;
+   return;
+ }
+
+ setTimeout(()=>{
+   [...loja.options].forEach(op=>{
+      if(op.text.trim()===(sessao.loja||'').trim()){
+         loja.value=op.value;
+      }
+   });
+   loja.disabled=true;
+   carregarGestor();
+ },100);
+}
+
+
+
+function carregarGestor(){
+ const lojaId=document.getElementById('loja').value;
+ const campo=document.getElementById('gestor');
+ campo.value='';
+ const gestores=JSON.parse(localStorage.getItem('gestores')||'[]');
+ const lojas=JSON.parse(localStorage.getItem('lojas')||'[]');
+ const loja=lojas.find(l=>String(l.id)===String(lojaId));
+ const gestor=gestores.find(g=>
+    String(g.lojaId||'')===String(lojaId) ||
+    ((g.lojaNome||'').trim()===((loja?.cidade||loja?.nome||'').trim()))
+ );
+ if(gestor) campo.value=gestor.nome||'';
+}
+
+// ===== Preenchimento automático do Gestor e Funcionários =====
+function inicializarLoja(){
+  carregarGestor();
+  setTimeout(()=>{
+    if(document.getElementById('gestor').value){
+      carregarFuncionarios();
+    }
+  },100);
+}
+
+document.getElementById('loja').addEventListener('change',inicializarLoja);
+
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    inicializarLoja();
+  },300);
+});
+
+
+// ===== Competência automática e validação =====
+function definirCompetenciaAtual(){
+ const c=document.getElementById('competencia');
+ if(!c.value){
+   const d=new Date();
+   c.value=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+ }
+}
+function verificarLancamentoAtual(){
+ const lista=JSON.parse(localStorage.getItem('lancamentos')||'[]');
+ const emp=document.getElementById('empresa').value;
+ const loja=document.getElementById('loja').value;
+ const comp=document.getElementById('competencia').value;
+ if(!emp||!loja||!comp) return;
+ const existe=lista.some(x=>x.empresa===emp&&x.loja===loja&&x.competencia===comp);
+ if(existe){
+   document.getElementById('situacao').textContent='🟡 Lançamento já existente';
+   document.getElementById('situacao').style.color='orange';
+ }
+}
+window.addEventListener('load',()=>{
+ setTimeout(()=>{
+   definirCompetenciaAtual();
+   verificarLancamentoAtual();
+ },400);
+});
+document.getElementById('competencia').addEventListener('change',verificarLancamentoAtual);
+document.getElementById('loja').addEventListener('change',verificarLancamentoAtual);
+
+
+// ===== Abrir automaticamente lançamento existente =====
+function carregarLancamentoExistente(){
+ const lista=JSON.parse(localStorage.getItem('lancamentos')||'[]');
+ const emp=document.getElementById('empresa').value;
+ const loja=document.getElementById('loja').value;
+ const comp=document.getElementById('competencia').value;
+ if(!emp||!loja||!comp) return;
+
+ const reg=lista.find(x=>x.empresa===emp && x.loja===loja && x.competencia===comp);
+ if(!reg) return;
+
+ if(confirm('Já existe um lançamento para esta competência. Deseja carregá-lo?')){
+   abrirLancamento();
+ }
+}
+['empresa','loja','competencia'].forEach(id=>{
+ document.getElementById(id).addEventListener('change',()=>{
+   setTimeout(carregarLancamentoExistente,150);
+ });
+});
+window.addEventListener('load',()=>{
+ setTimeout(carregarLancamentoExistente,700);
+});
+
+
+
+// ===== Sugestão automática do mês anterior =====
+function sugerirMesAnterior(){
+ const emp=document.getElementById('empresa').value;
+ const loja=document.getElementById('loja').value;
+ const comp=document.getElementById('competencia').value;
+ if(!emp||!loja||!comp) return;
+
+ const lista=JSON.parse(localStorage.getItem('lancamentos')||'[]');
+ const [ano,mes]=comp.split('-').map(Number);
+ let m=mes-1,a=ano;
+ if(m===0){m=12;a--;}
+ const chave=`${a}-${String(m).padStart(2,'0')}`;
+
+ const reg=lista.find(x=>x.empresa===emp && x.loja===loja && x.competencia===chave);
+ if(!reg) return;
+
+ if(confirm('Encontradas metas do mês anterior. Deseja utilizá-las como base?')){
+   copiarMesAnterior();
+ }
+}
+
+['empresa','loja','competencia'].forEach(id=>{
+ document.getElementById(id).addEventListener('change',()=>{
+   setTimeout(sugerirMesAnterior,300);
+ });
+});
+
+window.addEventListener('load',()=>{
+ setTimeout(sugerirMesAnterior,900);
+});
+
+
+
+// ===== Bloqueio de salvamento quando houver divergência =====
+function validarAntesSalvar(){
+  conferirMetas();
+  const situacao=document.getElementById('situacao').textContent||'';
+  if(!situacao.includes('Conferido')){
+    alert('As metas da loja e dos funcionários não conferem. Corrija as diferenças antes de salvar.');
+    return false;
+  }
+  return true;
+}
+
+const salvarAtual = salvarLancamento;
+salvarLancamento = function(){
+  if(!validarAntesSalvar()) return;
+  salvarAtual();
+};
+
+document.querySelector('.buttons button').onclick = salvarLancamento;
+
+</script></body></html

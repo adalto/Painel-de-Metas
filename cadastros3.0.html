@@ -1,0 +1,25 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Cadastros 3.0</title><style>body{font-family:Arial;background:#eef2f5;margin:0;padding:20px}.wrap{max-width:1100px;margin:auto}.header{background:#009640;color:#fff;padding:20px;border-radius:14px;text-align:center}.card{background:#fff;padding:18px;border-radius:14px;margin-top:16px}input,select{padding:10px;width:100%;margin:6px 0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}button{padding:10px;border:none;border-radius:8px;background:#009640;color:#fff;margin:4px;cursor:pointer}table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border-bottom:1px solid #ddd;padding:8px}th{background:#009640;color:#fff}</style></head><body><div class="wrap"><div class="header"><h1>📁 Cadastros 3.0</h1><p>🏪 Cadastro de Lojas</p></div><div class="card"><div class="grid">
+<div><label>Empresa</label><input id="empresa" readonly></div>
+<div><label>CNPJ</label><input id="cnpj" placeholder="CNPJ"></div>
+<div><label>Cidade</label><input id="cidade" placeholder="Cidade"></div>
+<div><label>UF</label><input id="uf" placeholder="UF" value="MS"></div>
+<div><label>Status</label><select id="status"><option>Ativa</option><option>Inativa</option></select></div>
+</div><button onclick="salvar()">💾 Salvar Loja</button><button onclick="limpar()">🧹 Limpar</button><button onclick="location.href='index.html'">⬅️ Menu</button><button onclick="toggleLista()" id="btnLista">📋 Lojas Cadastradas (0)</button>
+<div id="painelLista" style="display:none;margin-top:12px">
+<select id="listaLojas" onchange="selecionarLoja()" style="width:100%;padding:10px"></select>
+<div style="margin-top:10px">
+<button id="btnEditar" onclick="editarSelecionada()" style="display:none">✏️ Editar</button>
+<button id="btnExcluir" onclick="excluirSelecionada()" style="display:none;background:#c62828">🗑️ Excluir</button>
+</div>
+</div></div></div><script>
+let e=-1;const g=()=>JSON.parse(localStorage.getItem("lojas")||"[]");const s=l=>localStorage.setItem("lojas",JSON.stringify(l));
+function limpar(){nome.value=cidade.value="";status.value="Ativa";e=-1;}
+function carregarEmpresa(){let emp=JSON.parse(localStorage.getItem("empresa")||"null");if(emp){empresa.value=emp.fantasia||emp.razao||"";}}
+function salvar(){let l=g();let o={empresa:empresa.value,cnpj:cnpj.value,id:e>=0?l[e].id:Date.now(),codigo:e>=0?l[e].codigo:String(l.length+1).padStart(3,"0"),nome:"Drogaria Ultrapopular",cidade:cidade.value,uf:uf.value.toUpperCase(),status:status.value};if(e>=0)l[e]=o;else l.push(o);s(l);limpar();render();}
+function toggleLista(){painelLista.style.display=painelLista.style.display=="none"?"block":"none";}
+function render(){let l=g();btnLista.innerText=`📋 Lojas Cadastradas (${l.length})`;listaLojas.innerHTML='<option value="">Selecione...</option>';l.forEach(x=>listaLojas.innerHTML+=`<option value="${x.id}">${x.codigo} - ${x.cidade}</option>`);}
+function selecionarLoja(){let x=g().find(a=>String(a.id)==listaLojas.value);if(!x)return;empresa.value=x.empresa||empresa.value;cnpj.value=x.cnpj||"";cidade.value=x.cidade;uf.value=x.uf;status.value=x.status;e=g().findIndex(a=>a.id==x.id);btnEditar.style.display='inline-block';btnExcluir.style.display='inline-block';}
+function editarSelecionada(){salvar();}
+function excluirSelecionada(){if(e<0)return;let l=g();l.splice(e,1);s(l);limpar();render();btnEditar.style.display='none';btnExcluir.style.display='none';}
+carregarEmpresa();render();
+</script></body></html>
